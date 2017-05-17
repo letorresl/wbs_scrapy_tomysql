@@ -9,6 +9,10 @@ import scrapy
 
 
 class LawyersItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    name = scrapy.Field()
+    barnum = scrapy.Field()
+    status = scrapy.Field()
+    firmname = scrapy.Field()
+    address = scrapy.Field()
+    phone = scrapy.Field()
+    mail = scrapy.Field()
