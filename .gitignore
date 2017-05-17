@@ -1,0 +1,10 @@
+# Files
+
+# Python compiled modules
+*.pyc
+
+
+# Directories
+
+# Scrapy cache
+.scrapy/
