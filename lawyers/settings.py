@@ -54,9 +54,11 @@ DOWNLOAD_DELAY = 3
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'lawyers.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -85,8 +87,14 @@ AUTOTHROTTLE_ENABLED = True
 
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-HTTPCACHE_ENABLED = True
-HTTPCACHE_EXPIRATION_SECS = 30
-HTTPCACHE_DIR = 'httpcache'
+HTTPCACHE_ENABLED = False
+#HTTPCACHE_EXPIRATION_SECS = 3
+#HTTPCACHE_DIR = 'splashcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+#HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+SPLASH_URL = 'http://localhost:8050'
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+# Retry many times since proxies often fail
+RETRY_TIMES = 20
+# Retry on most error codes since proxies fail for different reasons
+#RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
