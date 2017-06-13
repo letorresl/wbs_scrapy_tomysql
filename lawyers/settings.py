@@ -48,17 +48,15 @@ DOWNLOAD_DELAY = 3
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
-}
+#SPIDER_MIDDLEWARES = {
+#    'lawyers.middlewares.LawyersSpiderMiddleware': 543,
+#}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'scrapy_splash.SplashCookiesMiddleware': 723,
-    'scrapy_splash.SplashMiddleware': 725,
-    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-}
+#DOWNLOADER_MIDDLEWARES = {
+#    'lawyers.middlewares.MyCustomDownloaderMiddleware': 543,
+#}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -68,9 +66,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'lawyers.pipelines.LawyersPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'lawyers.pipelines.LawyersPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,9 +86,7 @@ AUTOTHROTTLE_ENABLED = True
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
 HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-HTTPCACHE_DIR = 'splashcache'
+HTTPCACHE_EXPIRATION_SECS = 30
+HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
-HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
-SPLASH_URL = 'http://localhost:8050'
-DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
