@@ -2,7 +2,10 @@ import scrapy
 import re
 from scrapy.utils.response import open_in_browser
 from lawyers.items import LawyersItem
+from lawyers import settings
+from scrapy import signals
 from scrapy_splash import SplashRequest
+from datetime import datetime
 
 class LawyersSpider(scrapy.Spider):
     """Crawls lawyers' listings in floridabar website."""
@@ -16,14 +19,29 @@ class LawyersSpider(scrapy.Spider):
         + '&langs=&certValue=&pageNumber=1&pageSize=50'
     ]
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(cls, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_opened, signals.spider_opened)
+        crawler.signals.connect(spider.spider_closed, signals.spider_closed)
+        return spider
+
     def start_requests(self):
-        for url in self.start_urls:
-            yield SplashRequest(url, self.parse,
-                args={'wait': 10,
-                    'dont_process_response' : True,
-                    'timeout' : 120
-                }
+        def request_wrapper(url):
+            return SplashRequest(url, self.parse,
+                       args= {'wait' : 10,
+                              'dont_process_response' : True,
+                              'timeout' : 120
+                       }
             )
+        if self.curpagenum is not None and self.curpagenum != '':
+            url = self.start_urls[0]
+            url = re.sub('(?<=pageNumber=)[0-9]+', self.curpagenum, url)
+            yield request_wrapper(url)
+        else:
+            for url in self.start_urls:
+                yield request_wrapper(url)
+
 
     def parse(self, response):
         """Follows pagination links and iterate through floridabar listings."""
@@ -67,7 +85,6 @@ class LawyersSpider(scrapy.Spider):
             yield item
         
         results = response.xpath(
-            #'//div[@id= "searchresultsheader"]/p//text()'
             '//div[@id="searchresultsheader"]/p/text()'
         ).extract_first()
         totres = re.findall('[0-9,]+(?= results)', results)[0]
@@ -83,14 +100,11 @@ class LawyersSpider(scrapy.Spider):
         if curres < totres:
             # Extract page number and increment it by 1
             # for the next page
-            curpagenum = re.findall('pageNumber=[0-9]+',
+            self.curpagenum = int(re.findall('(?<=pageNumber=)[0-9]+',
                 response.url
-            )[0]
-            curpagenum = int(re.findall('[0-9]+',
-                curpagenum
             )[0]) + 1
-            newurl = re.sub('pageNumber=[0-9]+',
-                            'pageNumber={}'.format(curpagenum),
+            newurl = re.sub('(?<=pageNumber=)[0-9]+',
+                            '{}'.format(self.curpagenum),
                             response.url
                            )
             yield SplashRequest(newurl, callback= self.parse,
@@ -99,3 +113,13 @@ class LawyersSpider(scrapy.Spider):
                     'timeout' : 120
                 }
             )
+
+    def spider_closed(self, spider):
+        with open(self.settings['LASTPAGE_TMPARCH'], mode='w') as f:
+            f.write(str(self.curpagenum))
+        print(self.settings['LASTPAGE_TMPARCH'])
+
+    def spider_opened(self, spider):
+        with open(self.settings['LASTPAGE_TMPARCH'], mode='r') as f:
+            self.curpagenum = f.readline()
+        print(self.curpagenum)
