@@ -98,3 +98,5 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 RETRY_TIMES = 20
 # Retry on most error codes since proxies fail for different reasons
 #RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+LASTPAGE_TMPARCH = '.lastpage.tmp'
+LASTPAGE_NUM = 'lastpagenum'
